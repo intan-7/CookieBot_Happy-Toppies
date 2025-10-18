@@ -621,26 +621,26 @@
 ];
 
 
-     function addMessage(text, sender) {
+      function sendMessage() {
+      const message = input.value.trim();
+      if (!message) return;
+
+      // tampilkan pesan user
+      addMessage(message, "user");
+      input.value = "";
+
+      // respon chatbot berdasarkan tahap percakapan
+      setTimeout(() => {
+        handleBotReply(message);
+      }, 500);
+    }
+
+    function addMessage(text, sender) {
       const div = document.createElement("div");
       div.classList.add(sender);
       div.textContent = text;
       chatbox.appendChild(div);
       chatbox.scrollTop = chatbox.scrollHeight;
-    }
-
-    function sendMessage() {
-      if (chatEnded) return; // kalau chat sudah berakhir, abaikan input
-
-      const message = input.value.trim();
-      if (!message) return;
-
-      addMessage(message, "user");
-      input.value = "";
-
-      setTimeout(() => {
-        handleBotReply(message);
-      }, 500);
     }
 
     function handleBotReply(message) {
@@ -653,31 +653,32 @@
         if (isNaN(number) || number < 1 || number > 500) {
           addMessage("Masukkan angka antara 1–500 yaa ✨", "bot");
         } else {
-          const quote = quotes[number % quotes.length]; // biar tetap valid kalau > 10
+          const quote = quotes[number - 1];
           addMessage(`Ini quotes buat kamu, ${userName}:`, "bot");
           setTimeout(() => {
             addMessage(`"${quote}"`, "bot");
-            setTimeout(() => {
-              addMessage(`Waah, CookieBot 🍪 cuma bisa ngobrol sampai sini nih. Makasih udah main bareng ya, ${userName}! 💛`, "bot");
-              addMessage("Semangat terus dan jaga mood kamu hari ini! Bye-bye 👋", "bot");
-              chatEnded = true; // tandai percakapan selesai
-            }, 1200);
-          }, 600);
-          step = 2;
+            step = 2;
+          }, 500);
         }
+      } else {
+        // Setelah dapat quotes, respon random biar terasa hidup
+        const randomReplies = [
+          "Waah, Maaf yaa, kamu hanya bisa memilih quates satu kali. Dan CookieBot 🍪 hanya bisa merespon sampai sini. CookieBot mengucapkan Terimakasih sudah mengunjungi chatbot ini. Semangat ya untuk Menjalani hari-hari kamu 💛. Bye-Bye 👋"
+        ];
+        const reply = randomReplies[Math.floor(Math.random() * randomReplies.length)];
+        addMessage(reply, "bot");
       }
     }
 
-    // biar bisa kirim pakai Enter
+    // tekan Enter untuk kirim
     input.addEventListener("keypress", function(e) {
-      if (e.key === "Enter") {
-        sendMessage();
-      }
+      if (e.key === "Enter") sendMessage();
     });
   </script>
 
 </body>
 </html>
+
 
 
 
