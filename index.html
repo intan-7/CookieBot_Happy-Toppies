@@ -665,9 +665,9 @@
               );
            input.disabled = true;
             input.placeholder = "Percakapan telah berakhir 💬";
-            step = 2;
-          }, 1200);
-        }, 700);
+            step = 99;
+          }, 1000);
+        }, 600);
       } 
     else {
        addMessage("Percakapan sudah berakhir 💬 Refresh halaman untuk mulai lagi ya!", "bot");
@@ -675,13 +675,17 @@
     }
 
     // tekan Enter untuk kirim
-    input.addEventListener("keypress", function(e) {
-      if (e.key === "Enter") sendMessage();
+    input.addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        sendMessage():
+      }
     });
   </script>
 
 </body>
 </html>
+
 
 
 
