@@ -643,7 +643,27 @@
       chatbox.scrollTop = chatbox.scrollHeight;
     }
 
+    fuction getBotResponse(input) {
+      input = input.toLowerCase();
+
+      //Daftar kata kunci yang dianggap sebagai akhir percakapan
+      const goodbyeKeywords = ["terima kasih, "makasih", "terimakasih", "thanks", "thx", "Okey", "Oke", "OK", "sampai jumpa", "dadah", "bye", "em"];
+      for (let keyword of goodbyeKeywords) {
+        if (input.includes(keyword)) {
+          return "sama-sama! 😊 Semoga harimu menyenangkan ya! 💛";
+        }
+      }
+
     function handleBotReply(message) {
+      const botResponse = getBotResponse(message);
+      if (botResponse) {
+        addMessage(botResponse, "bot");
+        input.disable = true;
+        input.placeholder = "Percakapan telah berakhir 💬";
+        return;
+      }
+
+      
       if (step === 0) {
         userName = message;
         addMessage(`Hai ${userName}! Sekarang pilih angka keberuntunganmu antara 1–500, berapa nih? 🍀`, "bot");
@@ -662,12 +682,10 @@
         }
       } else {
         // Setelah dapat quotes, respon random biar terasa hidup
-        const randomReplies = [
-          "Waah, Maaf ya. kamu hanya bisa memilih satu kali angka keberuntungan. Terimakasii💛",
-          "Waah, Maaf yaa, CookieBot 🍪 hanya bisa merespon sampai sini. CookieBot mengucapkan Terimakasih sudah mengunjungi chatbot ini. Semangat ya untuk Menjalani hari-hari kamu 💛. Bye-Bye 👋"
-        ];
-        const reply = randomReplies[Math.floor(Math.random() * randomReplies.length)];
-        addMessage(reply, "bot");
+        const closing = "Waah, Maaf yaa, CookieBot 🍪 hanya bisa merespon sampai sini. Terima kasih sudah mengunjungi chatbot ini 💛. Semangat menjalani hari-harimu! Bye-bye 👋";
+        addMessage(closing, "bot");
+        input.disabled = true;
+        input.plaveholder = "Percakapan telah berakhir 💬";
       }
     }
 
@@ -679,4 +697,5 @@
 
 </body>
 </html>
+
 
