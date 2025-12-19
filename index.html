@@ -159,6 +159,101 @@
       background-color: #20b759;
     }
 
+    .emoji-card {
+        font-size: 34px;
+        background: linear-gradient(135deg, #fff, #f7efe8);
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 90px;
+        cursor: pointer;
+        user-select: none;
+        box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        animation: pop 0.2s ease;
+    }
+
+    .emoji-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+        gap: 14px;
+        margin-top: 10px;
+        padding: 10px;
+    }
+
+    .emoji-card:hover{
+        transform: translateY(-4px) scale(1.05);
+        box-shadow: 0 10px 18px rgba(0,0,0,0.18);
+    }
+
+    .emoji-card.hidden {
+        background: linear-gradient(135deg, #e1bca3, #d4a373);
+        color: transparent;
+        position: relative;
+    }
+
+    .emoji-card.hidden::after {
+        content: "❓";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #fff;
+        font-size: 28px;
+    }
+
+    .emoji-card.matched {
+        background: linear-gradient(235deg, #a8e6cf, #7ed9b5);
+        box-shadow: 0 0 20px rgba(126,217,181,0.8);
+        transform: scale(1.08);
+        pointer-events: none;
+    }
+
+    .back-btn {
+        margin-top: 10px;
+        z-index: 10;
+        position: relative;
+    }
+
+    .game-info {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        background: #fff;
+        padding: 12px 16px;
+        border-radius: 14px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        font-weight: 600;
+    }
+
+    @keyframes pulse {
+        0% { transform: translate(-50%, -50%) scale(1); }
+        50% { transform: translate(-50%, -50%) scale(1.1); }
+        100% { transform: translate(-50%, -50%) scale(1); }
+    }
+
+    #hintBtn {
+        background: linear-gradient(135deg, #ffd6a5, #f4a261);
+        border: none;
+        border-radius: 12px;
+        padding: 6px 14px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        transition: all 0.2s ease;
+    }
+
+    #hintBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+    }
+
+    #hintBtn:active {
+        transform: scale(0.95);
+    }
+
     footer {
       text-align: center;
       margin-top: 16px;
@@ -185,6 +280,7 @@
       <button id="quotesBtn">Quotes Untuk Kamu</button>
       <button id="ratingBtn">Rating Produk</button>
       <button id="variantBtn">Varian Kukis</button>
+      <button id="emojiGameBtn">Game Pasang Emoji</button>
     </div>
 
     <button class="back-btn" id="backBtn" style="display:none;">← Kembali</button>
@@ -200,7 +296,7 @@
   </div>
 
   <script>
-     const chat = document.getElementById('chat');
+    const chat = document.getElementById('chat');
     const inputArea = document.getElementById('inputArea');
     const userInput = document.getElementById('userInput');
     const sendBtn = document.getElementById('sendBtn');
@@ -731,6 +827,15 @@
       { name: "Red Velvet", desc: "Manis lembut berwarna menggoda." }
     ];
 
+    const emojiPool = [
+        "😅", "🤣", "😇", "😍", "😝", "😎", "🤩", "😭", "😤", "🥶", "🤗", "🤯", "😰", "😴", "😵‍💫", "🤢", "😈", "🤑", "🤕", "🤐", "🫩", "😵", "🫠", "🥰", "🤓", "🧐", "🥳", "🥸", "😖", "🥵", "😡", "🤫", "🤒", "🤧", "🤕", "🤠", "🤑",
+        "🐥", "🪿", "🦆", "🦅", "🦉", "🐗", "🐝", "🦋", "🦇", "🐛", "🐌", "🐜", "🪳", "🪰", "🕷️", "🐢", "🐍", "🦎", "🦕", "🪼", "🦑", "🐙", "🦐", "🦞", "🦀", "🐡", "🐅", "🐆", "🦓", "🐬", "🦍", "🐘", "🐪", "🐄", "🐕", "🐈", "🐓", "🐇", "🐿️", "🐀", "🐉", "🐦‍🔥", "🦥",
+        "🕐", "🕑", "🕒", "🕓", "🕔", "🕕", "🕖", "🕗", "🕘", "🕙", "🕡", "🕟", "🕞", "🕝", "🕜", "🕛", "🕚", "🕢", "🕣", "🕤", "🕥", "🕦", "🕧", "🔕", "🔔", "🔇", "🔉", "🔊", "🔈",
+        "❤️","💙","💛","💜","💚","🖤","🤍",
+        "🌞","🌕","⭐","☁️","🌧️","🌈",
+        "🇮🇩","🇯🇵","🇰🇷","🇺🇸","🇫🇷","🇧🇷"
+    ];
+
     function addMessage(text, sender) {
       const div = document.createElement("div");
       div.classList.add("bubble", sender);
@@ -850,11 +955,183 @@
     function startChat(menuType) {
       menu.style.display = "none";
       backBtn.style.display = "block";
-      inputArea.style.display = "flex";
       chat.innerHTML = "";
       currentMenu = menuType;
+
+      if (menuType === 'emojiGame') {
+        inputArea.style.display = "none";
+      } else {
+        inputArea.style.display = "flex";
+      }
     }
 
+
+    let firstCard = null;
+    let secondCard = null;
+    let lockBoard = false;
+    let matchedCount = 0;
+    let currentLevel = 1;
+    let timer = 0;
+    let timerInterval;
+    let clickCount = 0;
+    let hintCount = 3; // Jumlah hint tersedia
+    let bestScore = localStorage.getItem('emojiGameBestScore') || 0;
+
+    document.getElementById('emojiGameBtn').addEventListener('click', () => {
+        startChat('emojiGame');
+        addMessage(`Game Pasang Emoji Dimulai! Pilih level:`, "bot");
+        showLevelSelection();
+    });
+
+    function showLevelSelection() {
+        chat.innerHTML = "";
+        const levelSelect = document.createElement("div");
+        levelSelect.className = "level-select";
+        levelSelect.innerHTML = `
+            <button class="level-btn" data-pairs="10">Mudah (10 pasang)</button>
+            <button class="level-btn" data-pairs="14">Sedang (14 pasang)</button>
+            <button class="level-btn" data-pairs="20">Sulit (20 pasang)</button>
+        `;
+        chat.appendChild(levelSelect);
+        document.querySelectorAll('.level-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const pairs = parseInt(e.target.dataset.pairs);
+                startEmojiRound(pairs);
+            });
+        });
+    }
+
+    function startEmojiRound(pairs) {
+        chat.innerHTML = "";
+        const picked = shuffleArray([...emojiPool]).slice(0, pairs);
+        const cards = shuffleArray([...picked, ...picked]);
+
+        matchedCount = 0;
+        firstCard = null;
+        secondCard = null;
+        clickCount = 0;
+        hintCount = 3;
+        timer = 0;
+
+        const gameInfo = document.createElement("div");
+        gameInfo.className = "game-info";
+        gameInfo.innerHTML = `
+            <span>Level: ${currentLevel}</span>
+            <span>Waktu: <span id="timer">0</span>s</span>
+            <span>Klik: <span id="clicks">0</span></span>
+            <span>Hint: <span id="hints">${hintCount}</span></span>
+            <button id="hintBtn">Hint</button>
+        `;
+        chat.appendChild(gameInfo);
+
+        const grid = document.createElement("div");
+        grid.className = "emoji-grid";
+
+        cards.forEach(emoji => {
+            const card = document.createElement("div");
+            card.className = "emoji-card hidden";
+            card.dataset.emoji = emoji;
+            card.textContent = emoji;
+            card.onclick = () => flipCard(card);
+            grid.appendChild(card);
+        });
+
+        chat.appendChild(grid);
+
+        // Mulai timer
+        timerInterval = setInterval(() => {
+            timer++;
+            document.getElementById('timer').textContent = timer;
+        }, 1000);
+
+        // Event hint
+        document.getElementById('hintBtn').addEventListener('click', useHint);
+    }
+
+    function flipCard(card) {
+        if (lockBoard || card === firstCard || card.classList.contains("matched") || card.classList.contains("flipped")) return;
+
+        card.classList.remove("hidden");
+        card.classList.add("flipped");
+        clickCount++;
+        document.getElementById('clicks').textContent = clickCount;
+
+        if (!firstCard) {
+            firstCard = card;
+            return;
+        }
+
+        secondCard = card;
+        lockBoard = true;
+
+        if (firstCard.dataset.emoji === secondCard.dataset.emoji) {
+            firstCard.classList.add("matched");
+            secondCard.classList.add("matched");
+            matchedCount += 2;
+            resetTurn();
+
+            if (matchedCount === document.querySelectorAll(".emoji-card").length) {
+                clearInterval(timerInterval);
+                const score = calculateScore();
+                if (score > bestScore) {
+                    bestScore = score;
+                    localStorage.setItem('emojiGameBestScore', bestScore);
+                }
+                setTimeout(() => {
+                    addMessage(`🏆 Selamat! Waktu: ${timer}s, Klik: ${clickCount}, Skor: ${score} (Best: ${bestScore})`, "bot");
+                    const playAgainBtn = document.createElement("button");
+                    playAgainBtn.className = "play-again-btn";
+                    playAgainBtn.textContent = "Level Berikutnya";
+                    playAgainBtn.onclick = () => {
+                        currentLevel++;
+                        showLevelSelection();
+                    };
+                    chat.appendChild(playAgainBtn);
+                }, 500);
+            }
+        } else {
+            setTimeout(() => {
+                firstCard.classList.add("hidden");
+                firstCard.classList.remove("flipped");
+                secondCard.classList.add("hidden");
+                secondCard.classList.remove("flipped");
+                resetTurn();
+            }, 1000);
+        }
+    }
+
+    function resetTurn() {
+        [firstCard, secondCard] = [null, null];
+        lockBoard = false;
+    }
+
+    function useHint() {
+        if (hintCount > 0 && !lockBoard) {
+            hintCount--;
+            document.getElementById('hints').textContent = hintCount;
+            const unmatched = Array.from(document.querySelectorAll('.emoji-card:not(.matched)'));
+            if (unmatched.length > 0) {
+                const randomCard = unmatched[Math.floor(Math.random() * unmatched.length)];
+                randomCard.classList.remove("hidden");
+                randomCard.classList.add("flipped");
+                setTimeout(() => {
+                    randomCard.classList.add("hidden");
+                    randomCard.classList.remove("flipped");
+                }, 1000);
+            }
+        }
+    }
+
+    function calculateScore() {
+        // Skor berdasarkan waktu (lebih cepat lebih baik) dan klik (lebih sedikit lebih baik)
+        return Math.max(0, 1000 - timer * 10 - clickCount * 5);
+    }
+
+    function shuffleArray(arr) {
+        return arr.sort(() => Math.random() - 0.5);
+    }
+
+    // ... (kode setelahnya tetap sama)
     backBtn.addEventListener('click', resetChat);
   </script>
 </body>
